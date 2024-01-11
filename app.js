@@ -1,31 +1,31 @@
 const express = require('express');
 const path = require('path');
 const mysql = require('mysql');
+const bookingRouter = require('./bookingRouter'); // Import the booking router
 
 require('dotenv').config();
 
+const db = require('./database');
+console.log(db); // Check what is being imported
 
-// Create MySQL connection
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME
-});
-
-// Connect to MySQL
-db.connect((err) => {
+db.connect(err => {
     if (err) {
-        throw err;
+        console.error('Error connecting to the database:', err);
+        return;
     }
-    console.log('Connected to the MySQL database.');
+    console.log('Connected to the MySQL database');
 });
 
 const app = express();
 const port = 3000;
 
+app.use(express.json()); // Middleware to parse JSON bodies
+
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Use booking router for '/api/bookings' route
+app.use('/api/bookings', bookingRouter);
 
 // Route for the homepage
 app.get('/', (req, res) => {

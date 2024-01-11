@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function () {
         let day = date.toDateString();
         return `<div class="day-column">
                     <h3>${day}</h3>
-                    <button onclick="selectSlot('${day}', '6:30 PM')">6:30 PM</button>
-                    <button onclick="selectSlot('${day}', '7:30 PM')">7:30 PM</button>
+                    <button class="button" style="margin-bottom:10px" onclick="selectSlot('${day}', '6:30 PM')">6:30 PM</button>
+                    <button class= "button" onclick="selectSlot('${day}', '7:30 PM')">7:30 PM</button>
                 </div>`;
     }
 
@@ -32,4 +32,43 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     renderCalendar();
+
+    // Function to handle slot selection
+    window.selectSlot = function(day, time) {
+        selectedSlot = { day, time };
+        // Convert day to Date object and format as YYYY-MM-DD
+        const dateObject = new Date(day);
+        const formattedDate = dateObject.toISOString().split('T')[0];
+        document.getElementById('selectedDay').value = formattedDate;
+        document.getElementById('selectedTime').value = time;
+        document.getElementById('bookingForm').style.display = 'block';
+    };
+
+// Function to handle form submission
+document.getElementById('bookingForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const bookingData = {
+        start_date: selectedSlot.day,
+        time: selectedSlot.time,
+        student_name: document.getElementById('studentName').value
+    };
+
+    fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bookingData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        // Add logic to show success message or handle errors
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
+
 });

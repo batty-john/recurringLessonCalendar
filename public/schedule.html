@@ -20,6 +20,15 @@
         <h1>Schedule Your Swimming Lesson</h1>
         <p>Select a time slot for your lesson and sign up for recurring sessions.</p>
         <div id="calendar"></div>
+        <div id="bookingForm" style="display:none;">
+            <h2>Book Your Lesson</h2>
+            <form id="bookingForm">
+                <input type="hidden" id="selectedDay" name="start_date">
+                <input type="hidden" id="selectedTime" name="time">
+                <input type="text" id="studentName" name="student_name" placeholder="Student Name">
+                <button type="submit">Book Lesson</button>
+            </form>
+        </div>
     </main>
     <footer>
         <p>&copy; 2024 Vernal Swimming Lessons</p>
