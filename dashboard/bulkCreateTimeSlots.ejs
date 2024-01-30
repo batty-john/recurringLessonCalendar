@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bulk Create Time Slots</title>
+</head>
+<body>
+  <h1>Bulk Create Time Slots</h1>
+  <form action="/bulk-create-time-slots" method="POST">
+    <div>
+        <label for="instructorId">Instructor ID:</label>
+        <input type="number" id="instructorId" name="instructorId" required>
+      </div>
+    <div>
+      <label>Select Days:</label>
+      <div><input type="checkbox" name="daysOfWeek" value="Monday"> Monday</div>
+      <div><input type="checkbox" name="daysOfWeek" value="Tuesday"> Tuesday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Wednesday"> Wednesday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Thursday"> Thursday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Friday"> Friday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Saturday"> Saturday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Sunday"> Sunday</div>
+    </div>
+    <div>
+      <label for="startTime">Start Time:</label>
+      <input type="time" id="startTime" name="startTime" required>
+    </div>
+    <div>
+      <label for="endTime">End Time:</label>
+      <input type="time" id="endTime" name="endTime" required>
+    </div>
+    <div>
+      <label for="duration">Lesson Duration (minutes):</label>
+      <input type="number" id="duration" name="duration" required>
+    </div>
+    <div>
+      <label for="buffer">Buffer (minutes):</label>
+      <input type="number" id="buffer" name="buffer" required>
+    </div>
+    <button type="submit">Create Time Slots</button>
+  </form>
+</body>
+</html>

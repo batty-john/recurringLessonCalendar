@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thank You</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    text-align: center;
+    flex-direction: column;
+}
+
+h1 {
+    color: #007bff;
+}
+
+p, li {
+    font-size: 18px; /* Larger text for readability */
+}
+
+ul {
+    list-style: none; /* Remove default list styling */
+    padding: 0;
+}
+
+ul li {
+    background: #fff; /* White background for the list items */
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+ul li:not(:last-child) {
+    border-bottom: 1px solid #e9e9e9; /* Separator for list items */
+}
+
+/* Styling for the important reminder paragraph */
+.important-reminder {
+    background-color: #e9e9e9;
+    padding: 20px;
+    margin-top: 30px; /* Spacing from the list */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: inline-block; /* To wrap content and not span full width */
+    max-width: 80%; /* Limit the max width */
+    font-style: italic; /* Italicize text for emphasis */
+}
+
+/* Styling for the payment details list */
+.payment-details {
+    text-align: left;
+    display: inline-block;
+    margin-top: 30px;
+}
+
+/* For devices with less width, a responsive design */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+        display: block; /* Stack elements instead of flex */
+    }
+
+    ul li, .important-reminder, .payment-details {
+        box-shadow: none;
+        border-radius: 0;
+    }
+}
+
+    </style>
+    
+</head>
+<body>
+    <h1>Thank You for Booking!</h1>
+    <p>Your swimming lesson has been successfully scheduled.</p>
+    <p>Booking Details:</p>
+    <ul>
+        <li>1st Lesson Date: <%= bookingConfirmation.booking.start_date %></li>
+        <li>Student Name: <%= bookingConfirmation.booking.student_name %></li>
+        <li>Day of Week: <%= bookingConfirmation.booking.day %></li>
+        <li>Time: <%= bookingConfirmation.booking.start_time %> - <%= bookingConfirmation.booking.end_time %></li>
+        <li>Instructor: <%= bookingConfirmation.booking.instructorName %></li>
+        <li>Location: <%= bookingConfirmation.booking.location %></li>
+        <li>Payment Amount: $<%= bookingConfirmation.payment.amount %></li>
+        <li>Payment Status: <%= bookingConfirmation.payment.status %></li>
+        <li>Subscription Type: <%= bookingConfirmation.booking.subscription_type %></li>
+        <li>Payment Details/Recipt: <a href="<%= bookingConfirmation.payment.link %>"> Click Here</a></li>  
+    </ul>
+    <p>Thank you for choosing Vernal Swimming Lessons!</p>
+    <p>To view or cancel your upcoming lessons, please visit your <a href="/account">account</a>.</p>
+    <p class="important-reminder">
+        Important Reminder: Lessons are taught at the Vernal Rec Center (610 S Vernal Avenue, Vernal, Utah 84078) during public open swim times. <br>
+        Admission to the facility is not included in the cost of the lesson, and a membership is highly advised.
+    </p>
+</body>
+</html>

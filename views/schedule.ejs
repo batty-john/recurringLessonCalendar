@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule a Lesson | Vernal Swimming Lessons</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="schedule.js" defer></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/schedule">Schedule a Lesson</a></li>
+                <% if (isAdmin) { %>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                <% } %>
+                <% if (isLoggedIn) { %>
+                    <li style="float:right"><a href="/logout">Log Out</a></li>
+                <% } else { %>
+                    <li style="float:right"><a href="/login">Log In</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Schedule Your Swimming Lesson</h1>
+        <p>Select a time slot for your lesson and sign up for recurring sessions.</p>
+        <div id="calendar"></div>
+
+        <% if (isLoggedIn) { %>
+            <div id="selectedDateTime" style="display:none;">
+                <h2>Selected Day/Time: <span id="displayDayTime"></span></h2>
+            </div>
+            
+            <div id="bookingForm" style="display: none;">
+                <h2>Book Your Lesson</h2>
+                <div id="formError" style="color: red; display: none;"></div>    
+            <form id="bookingForm">
+                <input type="hidden" id="selectedSlot" name="slotID">
+                <input type="text" id="studentName" name="student_name" placeholder="Student Name">
+                <select id="startDate" name="start_date"></select>
+                <button type="submit">Book Lesson</button>
+            </form>
+            
+        </div>
+        <p>All lessons are taught at the Vernal Rec Center (610 S Vernal Avenue, Vernal, Utah 84078) during public open swim times. <br> Admission to the facility is not included in the cost of the lesson, and a membership is highly advised.</p>
+        <% } else { %>
+            <div>
+                <p><a href="/login">Log in</a> or <a href="/create-account">Create an Account</a> to Book Your Lesson</p>
+            </div>
+        <% } %>
+    </main>
+    <footer>
+        <p>&copy; 2024 Vernal Swimming Lessons</p>
+    </footer>
+</body>
+</html>

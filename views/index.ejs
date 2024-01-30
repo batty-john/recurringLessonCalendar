@@ -10,11 +10,20 @@
     <header>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="schedule.html">Schedule a Lesson</a></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/schedule">Schedule a Lesson</a></li>
+                <% if (isAdmin) { %>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                <% } %>
+                <% if (isLoggedIn) { %>
+                    <li style="float:right"><a href="/logout">Log Out</a></li>
+                <% } else { %>
+                    <li style="float:right"><a href="/login">Log In</a></li>
+                <% } %>
             </ul>
         </nav>
     </header>
+    
     <main>
         <section class="intro">
             <h1>Swimming Lessons in Vernal, Utah</h1>

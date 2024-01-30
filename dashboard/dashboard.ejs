@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/schedule">Schedule a Lesson</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li style="float:right"><a href="/logout">Log Out</a></li>
+               
+            </ul>
+        </nav>
+    </header>
+  <h1>Add Time Slot for an Instructor</h1>
+  <form action="/add-time-slot" method="POST">
+    <div>
+      <label for="instructorId">Instructor ID:</label>
+      <input type="number" id="instructorId" name="instructorId" required>
+    </div>
+    <div>
+      <label for="dayOfWeek">Day of Week:</label>
+      <input type="text" id="dayOfWeek" name="dayOfWeek" required>
+    </div>
+    <div>
+      <label for="startTime">Start Time:</label>
+      <input type="time" id="startTime" name="startTime" required>
+    </div>
+    <div>
+      <label for="endTime">End Time:</label>
+      <input type="time" id="endTime" name="endTime" required>
+    </div>
+    <button type="submit">Add Time Slot</button>
+  </form>
+
+  <h1>Bulk Create Time Slots</h1>
+  <form action="/bulk-create-time-slots" method="POST">
+    <div>
+        <label for="instructorId">Instructor ID:</label>
+        <input type="number" id="instructorId" name="instructorId" required>
+      </div>
+    <div>
+      <label>Select Days:</label>
+      <div><input type="checkbox" name="daysOfWeek" value="Monday"> Monday</div>
+      <div><input type="checkbox" name="daysOfWeek" value="Tuesday"> Tuesday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Wednesday"> Wednesday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Thursday"> Thursday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Friday"> Friday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Saturday"> Saturday</div>
+        <div><input type="checkbox" name="daysOfWeek" value="Sunday"> Sunday</div>
+    </div>
+    <div>
+      <label for="startTime">Start Time:</label>
+      <input type="time" id="startTime" name="startTime" required>
+    </div>
+    <div>
+      <label for="endTime">End Time:</label>
+      <input type="time" id="endTime" name="endTime" required>
+    </div>
+    <div>
+      <label for="duration">Lesson Duration (minutes):</label>
+      <input type="number" id="duration" name="duration" required>
+    </div>
+    <div>
+      <label for="buffer">Buffer (minutes):</label>
+      <input type="number" id="buffer" name="buffer" required>
+    </div>
+    <button type="submit">Create Time Slots</button>
+  </form>
+  <h1>Time Slots</h1>
+  <form action="/delete-time-slots" method="POST">
+    <% timeSlots.forEach(slot => { %>
+      <div>
+        <input type="checkbox" name="slotIds" value="<%= slot.id %>">
+        Instructor ID: <%= slot.instructor_id %>, 
+        Day: <%= slot.day_of_week %>, 
+        Start: <%= slot.start_time %>, 
+        End: <%= slot.end_time %>
+      </div>
+    <% }); %>
+    <button type="submit">Delete Selected</button>
+  </form>
+
+  <h1>Add Instructor</h1>
+  <form action="/add-instructor" method="POST">
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+      <label for="bio">Bio:</label>
+      <textarea id="bio" name="bio" required></textarea>
+    </div>
+    <div>
+        <label for="experience_years">Years of Experience:</label>
+        <input type="number" id="experience_years" name="experience_years">
+      </div>
+    <button type="submit">Add Instructor</button>
+  </form>
+
+  <h1>Instructors</h1>
+  <form action="/delete-instructors" method="POST">
+    <% instructors.forEach(instructor => { %>
+      <div>
+        <input type="checkbox" name="instructorIds" value="<%= instructor.id %>">
+        Name: <%= instructor.name %>, Bio: <%= instructor.bio %> ID: <%= instructor.id %> Years of Experience: <%= instructor.experience_years %>
+      </div>
+    <% }); %>
+    <button type="submit">Delete Selected</button>
+  </form>
+
+</body>
+</html>

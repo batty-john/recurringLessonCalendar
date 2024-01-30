@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <title>Checkout</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      /* General body styling */
+body {
+    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.2;
+    padding: 20px;
+}
+
+/* Centering the form on the page */
+form {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+/* Style labels and input fields */
+label {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="time"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Added box-sizing */
+}
+
+/* Styling for Stripe Elements */
+#card-element {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+/* Style the submit button */
+button {
+    background-color: #5cb85c; /* Green */
+    color: #fff;
+    border: 0;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #4cae4c; /* Darker green */
+}
+
+/* Error message styling */
+#card-errors {
+    color: #d9534f; /* Red */
+    padding: 10px 0;
+}
+
+/* Radio button and label alignment */
+.radio-group {
+    margin-bottom: 15px; /* Spacing below each radio button group */
+}
+
+.radio-group label {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.radio-group input[type="radio"] {
+    margin-top: 0; /* Aligns radio button vertically with the label */
+}
+
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    form {
+        padding: 10px;
+    }
+}
+    </style>
+</head>
+<body>
+    <h2>Checkout</h2>
+    <form id="payment-form" action="/create-subscription" method="POST">
+
+        <!-- User Information -->
+        <div>
+            <label for="userName">Name:</label>
+            <input type="text" id="userName" name="name" value="<%= user.name %>" readonly>
+        </div>
+        <div>
+            <label for="userEmail">Email:</label>
+            <input type="email" id="userEmail" name="email" value="<%= user.email %>" readonly>
+        </div>
+        <div>
+            <label for="userPhone">Phone Number:</label>
+            <input type="tel" id="userPhone" name="phone" value="<%= user.phone %>" readonly>
+        </div>
+
+        <!-- Student Name (if different from user) -->
+        <div>
+            <label for="studentName">Student's Name (if not self):</label>
+            <input type="text" id="studentName" name="student_name" value="<%= studentName %>">
+        </div>
+
+        <!-- Appointment Details -->
+        <div>
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="startDate" value="<%= start_date %>" required>
+        </div>
+        <div>
+            <label for="startTime">Start Time:</label>
+            <input type="time" id="startTime" name="start_time" value="<%= timeslot.start_time %>" readonly>
+        </div>
+        <div>
+            <label for="endTime">End Time:</label>
+            <input type="time" id="endTime" name="end_time" value="<%= timeslot.end_time %>" readonly>
+        </div>
+        <div>
+            <label for="dayOfWeek">Day of Week:</label>
+            <input type="text" id="dayOfWeek" name="day_of_week" value="<%= timeslot.day_of_week %>" readonly>
+        </div>
+        <div>
+            <label for="instructorName">Instructor:</label>
+            <input type="text" id="instructorName" name="instructorName" value="<%= instructor.name %>" readonly>
+        </div>
+
+        <!-- Subscription Type -->
+        <div>
+          <p>Select Subscription Type:</p>
+          <div class="radio-group">
+              <input type="radio" id="weekly" name="subscription_type" value="Weekly" required>
+              <label for="weekly">Weekly @ $32</label>
+          </div>
+          <div class="radio-group">
+              <input type="radio" id="monthly" name="subscription_type" value="Monthly">
+              <label for="monthly">Monthly @ $122</label>
+          </div>
+      </div>
+
+        <input type="hidden" id="timeslotId" name="timeslotId" value="<%= timeslot.id %>">
+        <input type="hidden" id="instructorId" name="instructorId" value="<%= instructor.id %>">
+
+        <div id="card-element">
+        <!-- A Stripe Element will be inserted here. -->
+        </div>
+
+        <!-- Used to display form errors. -->
+        <div id="card-errors" role="alert"></div>
+
+        <button type="submit">Proceed to Payment</button>
+    </form>
+
+    <script>
+        // Your Stripe public key
+        var stripe = Stripe('pk_test_zeV4xoydrrMBKRDgcQtVDxgv00aumDsF40');
+        
+        // Create an instance of Elements.
+        var elements = stripe.elements();
+      
+        // Create an instance of the card Element and mount it to the "card-element" div.
+        var card = elements.create('card');
+        card.mount('#card-element');
+      
+        // Handle real-time validation errors from the card Element.
+        card.addEventListener('change', function(event) {
+          var displayError = document.getElementById('card-errors');
+          if (event.error) {
+            displayError.textContent = event.error.message;
+          } else {
+            displayError.textContent = '';
+          }
+        });
+      </script>
+      
+      <script>
+        var form = document.getElementById('payment-form');
+        form.addEventListener('submit', function(event) {
+          event.preventDefault();
+      
+          stripe.createToken(card).then(function(result) {
+            if (result.error) {
+              // Inform the user if there was an error.
+              var errorElement = document.getElementById('card-errors');
+              errorElement.textContent = result.error.message;
+            } else {
+              // Send the token to your server.
+              stripeTokenHandler(result.token);
+            }
+          });
+        });
+      
+        function stripeTokenHandler(token) {
+          // Insert the token ID into the form so it gets submitted to the server
+          var form = document.getElementById('payment-form');
+          var hiddenInput = document.createElement('input');
+          hiddenInput.setAttribute('type', 'hidden');
+          hiddenInput.setAttribute('name', 'stripeToken');
+          hiddenInput.setAttribute('value', token.id);
+          form.appendChild(hiddenInput);
+          
+          // Submit the form
+          form.submit();
+        }
+      </script>
+      
+</body>
+</html>
+

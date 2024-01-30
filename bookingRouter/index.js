@@ -10,6 +10,7 @@ const db = require('../database');
 // POST - Create a booking
 router.post('/', (req, res) => {
     const newBooking = req.body;
+    console.log(newBooking);
     // SQL query to insert a new booking into the database
     const query = 'INSERT INTO Bookings SET ?';
     db.query(query, newBooking, (err, result) => {
@@ -33,6 +34,24 @@ router.get('/', (req, res) => {
         }
     });
 });
+
+router.get('/available-time-slots', async (req, res) => {
+    try {
+        // You might want to modify this query based on your specific logic for determining availability
+        const query = `
+            SELECT ts.id, ts.instructor_id, ts.day_of_week, ts.start_time, ts.end_time
+            FROM TimeSlots ts
+            LEFT JOIN Bookings b ON ts.id = b.time_slot_id
+            WHERE b.id IS NULL OR b.start_date > NOW()`;
+
+        const [availableTimeSlots] = await db.query(query);
+        res.json(availableTimeSlots);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching available time slots');
+    }
+});
+
 
 // PUT - Update a booking
 router.put('/:id', (req, res) => {
