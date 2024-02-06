@@ -1,11 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const mysql = require('mysql2/promise');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+console.log("Stripe Secret Key: ", stripeSecretKey);
+const stripe = require('stripe')(stripeSecretKey);
 const bookingRouter = require('./bookingRouter'); // Import the booking router
 
-require('dotenv').config();
+
 
 async function startApp() {
     
@@ -18,6 +21,8 @@ async function startApp() {
 
     // Set the view engine to EJS
     app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, 'views'));
+    app.use(express.static('public'));
 
     const ses = session({
         secret: process.env.SESSION_SECRET,
@@ -141,8 +146,8 @@ async function startApp() {
             });
     
             // Retrieve the appropriate Stripe price ID based on subscription_type
-            const priceId = subscription_type === 'Weekly' ? 'price_1Oce6sF3hYaSi8nTrMC9Z7JA' : 'price_1Oce6sF3hYaSi8nTG5dfoNdF';
-            const planName = `${subscription_type}-plan for ${student_name} with ${instructorName}`
+            const priceId = subscription_type === 'Weekly' ? 'price_1OgbSHF3hYaSi8nTx2i7bbGH' : 'price_1OgbSmF3hYaSi8nT4SfI0QN5';
+            const planName = `${subscription_type}-lessons for ${student_name} with ${instructorName}`
             const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
     
             // Create the subscription in Stripe
@@ -150,7 +155,7 @@ async function startApp() {
                 customer: customer.id,
                 items: [{ price: priceId }],
                 metadata: { nickname: planName },
-                billing_cycle_anchor: Math.floor(new Date(startDate).getTime() / 1000), // Set the billing cycle anchor to the start date
+        
                 expand: ['latest_invoice.payment_intent'],
             });
     
@@ -160,11 +165,27 @@ async function startApp() {
                 [timeslotId, userId, student_name, new Date(), subscription.id]
             );
 
+            const oneDayInSeconds = 24 * 60 * 60;
+            let secondBillingDate = new Date(startDate).getTime() / 1000 + oneDayInSeconds; // The day after the first lesson in Unix timestamp
+
+            if (subscription_type === 'Weekly') {
+                // Delay the second subscription billing until day after 1st lesson
+                await updateSubscriptionTrialEnd(subscription.id, secondBillingDate);
+            } else if (subscription_type === 'Monthly') {
+                // Delat the second subscription billing until 3 weeks and 1 day after the first lesson
+                const threeWeeksInSeconds = 3 * 7 * oneDayInSeconds;
+                secondBillingDate += threeWeeksInSeconds; // Adding three weeks to the second billing date for monthly subscriptions
+                await updateSubscriptionTrialEnd(subscription.id, secondBillingDate);
+            }
+
+
     
             // Update the timeslot to mark it as booked
             await connection.execute('UPDATE TimeSlots SET is_booked = 1 WHERE id = ?', [timeslotId]);
     
             await connection.commit(); // Commit the transaction
+
+
     
             const bookingConfirmation = {
                 user: { name, email, phone },
@@ -205,8 +226,7 @@ async function startApp() {
             if (connection) connection.release(); // Release the connection back to the pool
         }
     });
-    
-    
+
     
 
     app.get('/checkout', async (req, res) => {
@@ -438,9 +458,68 @@ async function startApp() {
             connection.release();
         }
     }
+
+    /**
+ * Updates the trial end for a given subscription.
+ * 
+ * @param {string} subscriptionId The ID of the subscription to update.
+ * @param {number} newTrialEndUnixTimestamp The new end date for the trial period.
+ * @returns {Promise<Stripe.Subscription>} The updated subscription object.
+ */
+    async function updateSubscriptionTrialEnd(subscriptionId, newTrialEndUnixTimestamp) {
+        try {
+          const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
+            trial_end: newTrialEndUnixTimestamp,
+            proration_behavior: 'none',
+          });
+      
+          console.log('Subscription trial end updated successfully.');
+          return updatedSubscription;
+        } catch (error) {
+          console.error('Failed to update subscription trial end:', error);
+          throw error;
+        }
+      }
+      
     
     
-    
+  /**
+ * Extends the trial end for a given subscription by a specified duration from the next invoice date.
+ * 
+ * @param {string} subscriptionId The ID of the subscription to update.
+ * @param {number} durationInMilliseconds The duration to extend the trial, in milliseconds.
+ * @returns {Promise<Stripe.Subscription>} The updated subscription object.
+ */
+async function extendTrialFromNextInvoice(subscriptionId, durationInMilliseconds) {
+    try {
+      // Retrieve the current subscription
+      const currentSubscription = await stripe.subscriptions.retrieve(subscriptionId);
+  
+      // Check if there is a next invoice date
+      if (!currentSubscription.current_period_end) {
+        throw new Error('No next invoice date found for subscription.');
+      }
+  
+      // Calculate the new trial end timestamp
+      const nextInvoiceTimestamp = currentSubscription.current_period_end;
+      const newTrialEndUnix = nextInvoiceTimestamp + Math.floor(durationInMilliseconds / 1000);
+  
+      // Update the subscription with the new trial end date
+      const updatedSubscription = await stripe.subscriptions.update(
+        subscriptionId,
+        {
+          trial_end: newTrialEndUnix,
+          proration_behavior: 'none',
+        }
+      );
+  
+      console.log('Subscription trial end extended successfully.');
+      return updatedSubscription;
+    } catch (error) {
+      console.error('Failed to extend subscription trial end:', error);
+      throw error; // Rethrow or handle error as appropriate for your application
+    }
+  }  
     
     
 

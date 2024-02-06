@@ -12,6 +12,9 @@
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/schedule">Schedule a Lesson</a></li>
+
+                <% if (isLoggedIn) { %><li><a href="/account">My Lessons</a></li><% } %>
+
                 <% if (isAdmin) { %>
                     <li><a href="/dashboard">Dashboard</a></li>
                 <% } %>
