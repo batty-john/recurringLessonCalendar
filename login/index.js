@@ -58,7 +58,7 @@ app.get('/signup', (req, res) => {
  * 
  *******************************************/
 app.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', { errorMessage: null });
   });
 
   /*********************************************
@@ -174,10 +174,10 @@ app.post('/password-reset/:token', async (req, res) => {
           req.session.userRole = results[0].role;
           res.redirect('/');
         } else {
-          res.send('Username or password incorrect');
+          res.render('login', { errorMessage: 'Invalid username or password' });
         }
       } else {
-        res.send('Username or password incorrect');
+        res.render('login', { errorMessage: 'Invalid username or password' });
       }
     } catch(err) {
       console.log(err);

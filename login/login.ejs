@@ -18,10 +18,14 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
       </div>
+      <% if (errorMessage) { %>
+        <p class="error-message"><%= errorMessage %></p>
+      <% } %>
       <button type="submit">Login</button>
     </form>
     <a href="/signup">Sign Up</a>
     <a href="/password-reset">Forgot Your Password?</a>
-</div>
+    
+  </div>
 </body>
 </html>
