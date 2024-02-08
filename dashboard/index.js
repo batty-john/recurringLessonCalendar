@@ -22,8 +22,8 @@ app.set('view engine', 'ejs');
 app.get('/dashboard', checkAdmin, async (req, res) => {
 
     try {
-        const [timeSlots] = await db.query('SELECT * FROM TimeSlots');
-        const [instructors] = await db.query('SELECT * FROM Instructors');
+        const [timeSlots] = await db.query('SELECT * FROM timeslots');
+        const [instructors] = await db.query('SELECT * FROM instructors');
         res.render('dashboard', { timeSlots, instructors, error: null });
     } catch (err) {
         console.error(err);
@@ -44,7 +44,7 @@ app.get('/dashboard', checkAdmin, async (req, res) => {
   app.post('/add-time-slot', async (req, res) => {
     const { instructorId, dayOfWeek, startTime, endTime } = req.body;
     
-    const query = 'INSERT INTO TimeSlots (instructor_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)';
+    const query = 'INSERT INTO timeslots (instructor_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)';
     
     try {
         await db.query(query, [instructorId, dayOfWeek, startTime, endTime]);
@@ -98,7 +98,7 @@ app.post('/bulk-create-time-slots', checkInstructor, async (req, res) => {
         }
     }
 
-    const insertQuery = 'INSERT INTO TimeSlots (instructor_id, day_of_week, start_time, end_time) VALUES ?';
+    const insertQuery = 'INSERT INTO timeslots (instructor_id, day_of_week, start_time, end_time) VALUES ?';
 
     let values = slots.map(slot => [
         // Assuming you have the instructorId. Replace '1' with the actual instructor ID.
@@ -130,7 +130,7 @@ function convertMinutesToTime(minutes) {
 
 app.post('/delete-time-slots', async (req, res) => {
     const slotIds = req.body.slotIds;
-    const query = 'DELETE FROM TimeSlots WHERE id IN (?)';
+    const query = 'DELETE FROM timeslots WHERE id IN (?)';
 
     try {
         await db.query(query, [Array.isArray(slotIds) ? slotIds : [slotIds]]);
@@ -143,7 +143,7 @@ app.post('/delete-time-slots', async (req, res) => {
 
 app.post('/add-instructor', async (req, res) => {
     const { name, bio, experience_years } = req.body;
-    const query = 'INSERT INTO Instructors (name, bio, experience_years) VALUES (?, ?, ?)';
+    const query = 'INSERT INTO instructors (name, bio, experience_years) VALUES (?, ?, ?)';
 
     try {
         await db.query(query, [name, bio, experience_years]);
@@ -171,11 +171,11 @@ app.post('/delete-instructors', async (req, res) => {
         const idsArray = Array.isArray(instructorIds) ? instructorIds : [instructorIds];
 
         // Delete time slots for these instructors
-        const deleteSlotsQuery = 'DELETE FROM TimeSlots WHERE instructor_id IN (?)';
+        const deleteSlotsQuery = 'DELETE FROM timeslots WHERE instructor_id IN (?)';
         await db.query(deleteSlotsQuery, [idsArray]);
 
         // Now, delete the instructors
-        const deleteInstructorsQuery = 'DELETE FROM Instructors WHERE id IN (?)';
+        const deleteInstructorsQuery = 'DELETE FROM instructors WHERE id IN (?)';
         await db.query(deleteInstructorsQuery, [idsArray]);
 
         res.redirect('/dashboard');
