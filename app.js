@@ -216,7 +216,7 @@ async function startApp() {
             console.log("Booking Confirmation: ", bookingConfirmation);
 
             // Redirect to the thank you page and pass the booking confirmation data
-            res.render('thank-you', { bookingConfirmation });
+            res.render('thank-you', { bookingConfirmation, isLoggedIn: req.session.userId ? true : false, isAdmin: req.session.userRole === 'Admin' ? true : false});
 
         } catch (error) {
             if (connection) await connection.rollback(); // Rollback the transaction in case of error
@@ -278,7 +278,7 @@ async function startApp() {
     });
 
     app.get('/thank-you', (req, res) => {
-        res.render('thank-you');
+        res.render('thank-you', { isLoggedIn: req.session.userId ? true : false, isAdmin: req.session.userRole === 'Admin' ? true : false, bookingConfirmation: null });
     });
 
     async function fetchSubscriptionsForUser(stripeCustomerId) {
@@ -318,7 +318,7 @@ async function startApp() {
             const stripeCustomerId = result[0].stripe_customer_id;
             const subscriptions = await fetchSubscriptionsForUser(stripeCustomerId);
     
-            res.render('manage-subscriptions', { subscriptions: subscriptions });
+            res.render('manage-subscriptions', { subscriptions: subscriptions, isLoggedIn: req.session.userId ? true : false, isAdmin: req.session.userRole === 'Admin' ? true : false});
         } catch (error) {
             console.error('Failed to fetch subscriptions:', error);
             res.status(500).send('Error fetching subscriptions');
