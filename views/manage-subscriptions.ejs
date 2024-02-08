@@ -9,7 +9,25 @@
 </head>
 <body>
     <header>
-        <!-- Navigation here -->
+        <nav>
+            <img class="logo" src="logo.png" alt="Logo">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/schedule">Schedule a Lesson</a></li>
+
+                <% if (isLoggedIn) { %><li><a href="/account">My Lessons</a></li><% } %>
+
+                <% if (isAdmin) { %>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                <% } %>
+                <% if (isLoggedIn) { %>
+                    <li style="float:right"><a href="/logout">Log Out</a></li>
+                <% } else { %>
+                    <li style="float:right"><a href="/login">Log In</a></li>
+                <% } %>
+            </ul>
+        </nav>
+        
     </header>
     <main>
         <h1>Manage Your Subscriptions</h1>

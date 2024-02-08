@@ -222,3 +222,25 @@ button:hover {
     color: red;
     margin: 10px 0;
 }
+
+.instructor-portrait {
+    width: 200px;
+    border-radius: 5px;
+    object-fit: cover;
+    margin-bottom: 10px;
+    float: left;
+    padding: 15px;
+}
+
+
+.nav-bar {
+    position: relative;
+}
+
+.logo {
+    position: absolute;
+    width: 70px;
+    top: 10px;
+    left: 10px;
+}
+

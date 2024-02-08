@@ -10,9 +10,13 @@
 <body>
     <header>
         <nav>
+            <img class="logo" src="logo.png" alt="Logo">
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/schedule">Schedule a Lesson</a></li>
+
+                <% if (isLoggedIn) { %><li><a href="/account">My Lessons</a></li><% } %>
+
                 <% if (isAdmin) { %>
                     <li><a href="/dashboard">Dashboard</a></li>
                 <% } %>
@@ -23,6 +27,7 @@
                 <% } %>
             </ul>
         </nav>
+        
     </header>
     <main>
         <h1>Schedule Your Swimming Lesson</h1>
@@ -48,7 +53,7 @@
         <p>All lessons are taught at the Vernal Rec Center (610 S Vernal Avenue, Vernal, Utah 84078) during public open swim times. <br> Admission to the facility is not included in the cost of the lesson, and a membership is highly advised.</p>
         <% } else { %>
             <div>
-                <p><a href="/login">Log in</a> or <a href="/create-account">Create an Account</a> to Book Your Lesson</p>
+                <p><a href="/login">Log in</a> or <a href="/signup">Create an Account</a> to Book Your Lesson</p>
             </div>
         <% } %>
     </main>
