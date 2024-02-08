@@ -146,7 +146,7 @@ async function startApp() {
             });
     
             // Retrieve the appropriate Stripe price ID based on subscription_type
-            const priceId = subscription_type === 'Weekly' ? 'price_1OgbSHF3hYaSi8nTx2i7bbGH' : 'price_1OgbSmF3hYaSi8nT4SfI0QN5';
+            const priceId = subscription_type === 'Weekly' ? 'price_1OhQhaF3hYaSi8nTF0fpyaRW' : 'price_1OhQhWF3hYaSi8nT74wSIR9z';
             const planName = `${subscription_type}-lessons for ${student_name} with ${instructorName}`
             const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
     
