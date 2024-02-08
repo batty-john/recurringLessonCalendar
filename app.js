@@ -246,7 +246,7 @@ async function startApp() {
             const studentName = req.query.studentName;
     
             // Fetch user details
-            const [userDetails] = await db.execute('SELECT id, username, email, phone, name FROM uSsers WHERE id = ?', [userId]);
+            const [userDetails] = await db.execute('SELECT id, username, email, phone, name FROM users WHERE id = ?', [userId]);
     
             // Fetch timeslot details
             const [timeslotDetails] = await db.execute('SELECT id, instructor_id, start_time, end_time, day_of_week FROM timeslots WHERE id = ? AND is_booked = 0', [timeslotId]);
