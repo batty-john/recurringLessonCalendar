@@ -58,8 +58,8 @@ async function startApp() {
         try {
             const query = `
                 SELECT ts.id, ts.instructor_id, ts.day_of_week, ts.start_time, ts.end_time
-                FROM TimeSlots ts
-                LEFT JOIN Bookings b ON ts.id = b.time_slot_id
+                FROM timeslots ts
+                LEFT JOIN bookings b ON ts.id = b.time_slot_id
                 WHERE b.id IS NULL OR b.start_date > NOW()`;
     
             const [availableTimeSlots] = await db.query(query);
@@ -161,7 +161,7 @@ async function startApp() {
     
             // Insert booking details into the database
             const [booking] = await connection.execute(
-                'INSERT INTO Bookings (time_slot_id, user_id, student_name, start_date, stripe_subscription_id) VALUES (?, ?, ?, ?, ?)',
+                'INSERT INTO bookings (time_slot_id, user_id, student_name, start_date, stripe_subscription_id) VALUES (?, ?, ?, ?, ?)',
                 [timeslotId, userId, student_name, new Date(), subscription.id]
             );
 
@@ -181,7 +181,7 @@ async function startApp() {
 
     
             // Update the timeslot to mark it as booked
-            await connection.execute('UPDATE TimeSlots SET is_booked = 1 WHERE id = ?', [timeslotId]);
+            await connection.execute('UPDATE timeslots SET is_booked = 1 WHERE id = ?', [timeslotId]);
     
             await connection.commit(); // Commit the transaction
 
@@ -246,17 +246,17 @@ async function startApp() {
             const studentName = req.query.studentName;
     
             // Fetch user details
-            const [userDetails] = await db.execute('SELECT id, username, email, phone, name FROM Users WHERE id = ?', [userId]);
+            const [userDetails] = await db.execute('SELECT id, username, email, phone, name FROM uSsers WHERE id = ?', [userId]);
     
             // Fetch timeslot details
-            const [timeslotDetails] = await db.execute('SELECT id, instructor_id, start_time, end_time, day_of_week FROM TimeSlots WHERE id = ? AND is_booked = 0', [timeslotId]);
+            const [timeslotDetails] = await db.execute('SELECT id, instructor_id, start_time, end_time, day_of_week FROM timeslots WHERE id = ? AND is_booked = 0', [timeslotId]);
     
             if (timeslotDetails.length === 0) {
                 return res.status(404).send("Timeslot not found or already booked.");
             }
 
             //fetch instructor details
-            const [instructorDetails] = await db.execute('SELECT id, name FROM Instructors WHERE id = ?', [timeslotDetails[0].instructor_id]);
+            const [instructorDetails] = await db.execute('SELECT id, name FROM iSnstructors WHERE id = ?', [timeslotDetails[0].instructor_id]);
             
             if (instructorDetails.length === 0) {
                 return res.status(404).send("Instructor not found.");
