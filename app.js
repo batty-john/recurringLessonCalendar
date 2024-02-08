@@ -256,7 +256,7 @@ async function startApp() {
             }
 
             //fetch instructor details
-            const [instructorDetails] = await db.execute('SELECT id, name FROM iSnstructors WHERE id = ?', [timeslotDetails[0].instructor_id]);
+            const [instructorDetails] = await db.execute('SELECT id, name FROM instructors WHERE id = ?', [timeslotDetails[0].instructor_id]);
             
             if (instructorDetails.length === 0) {
                 return res.status(404).send("Instructor not found.");
