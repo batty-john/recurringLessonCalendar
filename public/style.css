@@ -52,6 +52,7 @@ footer {
 
 .week {
     display: flex;
+    overflow-x: scroll;
     padding: 10px;
 }
 
