@@ -37,6 +37,7 @@ nav ul li a {
 main {
     padding: 20px;
     text-align: center;
+    overflow-x: scroll;
 }
 
 footer {
