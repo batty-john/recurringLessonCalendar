@@ -64,6 +64,7 @@ footer {
     text-align: left;
     display: flex;
     flex-direction: column;
+    min-width: 150px;
 }
 
 .button {
