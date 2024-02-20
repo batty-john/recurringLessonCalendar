@@ -57,10 +57,10 @@ async function startApp() {
     app.get('/available-time-slots', async (req, res) => {
         try {
             const query = `
-                SELECT ts.id, ts.instructor_id, ts.day_of_week, ts.start_time, ts.end_time
+                SELECT ts.id, ts.instructor_id, ts.day_of_week, ts.start_time, ts.end_time, ts.is_booked
                 FROM timeslots ts
                 LEFT JOIN bookings b ON ts.id = b.time_slot_id
-                WHERE b.id IS NULL OR b.start_date > NOW()`;
+                WHERE ts.is_booked = 0`;
     
             const [availableTimeSlots] = await db.query(query);
             res.json(availableTimeSlots);
